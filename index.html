@@ -1,0 +1,293 @@
+<html>
+<head>
+	<title>Análise de Mecanismos de 4 Barras</title>
+	<meta charset="UTF-8">
+	<style type="text/css">
+		.div-defs{
+			float:left;
+			margin-left: 5px;
+		}
+		.input-elo{
+			width: 50px;
+			border-radius: 2px;
+			-webkit-border-radius: 2px;
+			border: 1px solid #B4B4B4;
+			margin-left: 3px;			
+			float:left;
+		}
+		.div-data{
+			background: #F0F0F0;
+			border: 1px solid #A5A5A5;
+			border-radius: 3px;
+			-moz-border-radius: 3px;
+			-webkit-border-radius: 3px;
+		}
+		input[readonly]{
+			background-color: rgb(232, 232, 232);
+		}
+		label{
+			width: 50px;
+			float: left;
+		}		
+		th, .dfsLabel{
+			padding: .4em .4em .4em .4em;
+			border: 1px solid #999999;			
+			border-radius: 2px;
+			-webkit-border-radius: 2px;
+			vertical-align: center;
+			text-align: left;
+			height: 12px;
+			font-size: 12px;
+			background-color: silver;
+			width: 40px;
+			float:left;
+		}
+		td:not([empty]){
+			border: 1px solid #999999;			
+			font-size: 14px;
+			background-color: white;
+		}		
+		td{
+			width: 100px;			
+		}
+	</style>
+	<script type="text/javascript">
+		String.prototype.asDouble = function(){
+			return parseDouble(this);
+		}
+		function parseDouble(value) {
+    		value = String(value).trim();
+    		if (value.length === 0 || value === 'undefined' || value === 'null')
+		        value = '0';	    
+	    	if (value.indexOf(',') !== -1)
+	        	value = value.replace('.', '').replace('.', '').replace(',', '.');
+    		return parseFloat(parseFloat(value).toFixed(12));
+		}
+		function toDegrees (angle) {
+	  		return angle * (180 / Math.PI);
+		}
+		function toRadians (angle) {
+  			return angle * (Math.PI / 180);
+		}
+		Number.prototype.formatMoney = function(c, d, t){
+			var n = this, 
+    		c = isNaN(c = Math.abs(c)) ? 2 : c, 
+    		d = d == undefined ? "." : d, 
+    		t = t == undefined ? "," : t, 
+    		s = n < 0 ? "-" : "", 
+    		i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
+    		j = (j = i.length) > 3 ? j % 3 : 0;
+   			return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+ 		}
+		function doAnalysis() {
+			var eloD = parseDouble(document.getElementById('eloD').value);
+			var eloA = parseDouble(document.getElementById('eloA').value);
+			var eloB = parseDouble(document.getElementById('eloB').value);
+			var eloC = parseDouble(document.getElementById('eloC').value);
+			var eloD = parseDouble(document.getElementById('eloD').value);
+			var t2 = parseDouble(document.getElementById('t2').value);
+			var w2 = parseDouble(document.getElementById('w2').value);			
+			var ax = calcAx(eloA,t2).asDouble();
+			var ay = calcAy(eloA,t2).asDouble();
+			var p = calcP(eloD,ay,ax).asDouble();
+			var s = calcS(eloA,eloB,eloC,eloD,ax).asDouble();			
+			var q = calcQ(eloD,ax,ay,s).asDouble();
+			var r = calcR(eloD,eloC,s).asDouble();
+			var byp = calcByPlus(p,q,r).asDouble();
+			var bym = calcByMinus(p,q,r).asDouble();
+			var bxp = calcBx(ay,ax,eloD,byp,s,'bxp').asDouble();
+			var bxm = calcBx(ay,ax,eloD,bym,s,'bxm').asDouble();
+			var t3p = calcT3(byp,bxp,ax,ay,'t3p').asDouble();
+			var t3m = calcT3(bym,bxm,ax,ay,'t3m').asDouble();
+			var t4p = calcT4(bxp,byp,eloD,'t4p').asDouble();
+			var t4m = calcT4(bxm,bym,eloD,'t4m').asDouble();
+			var w3p = calcW3(eloA,eloB,t2,t3p,t4p,w2,'w3p');
+			var w3m = calcW3(eloA,eloB,t2,t3m,t4m,w2,'w3m');
+			var w4p = calcW4(eloA,eloC,t2,t3p,t4p,w2,'w4p').asDouble();
+			var w4m = calcW4(eloA,eloC,t2,t3m,t4m,w2,'w4m').asDouble();
+			calcVa(eloA,w2);
+			calcVb(eloC,w4p,'vbp');
+			calcVb(eloC,w4m,'vbm');
+			grashofAnalisys();
+		}		
+		function calcAx(eloA,t2){
+			return document.getElementById('ax').textContent = (eloA*Math.cos(toRadians(t2))).formatMoney('3',',','.');
+		}
+		function calcAy(eloA,t2){		
+			return document.getElementById('ay').textContent = (eloA*Math.sin(toRadians(t2))).formatMoney('3',',','.');
+		}
+		function calcP(eloD,ay,ax){
+			return document.getElementById('p').textContent = ((Math.pow(ay,2)/Math.pow((ax-eloD),2))+1).formatMoney('3',',','.');
+		}
+		function calcS(eloA,eloB,eloC,eloD,ax){
+			return document.getElementById('s').textContent = ((Math.pow(eloA,2)-Math.pow(eloB,2)+Math.pow(eloC,2)-Math.pow(eloD,2))/(2*(ax-eloD))).formatMoney('3',',','.');
+		}
+		function calcQ(eloD,ax,ay,s){
+			return document.getElementById('q').textContent = ((2*ay*(eloD-s))/(ax-eloD)).formatMoney('3',',','.');
+		}
+		function calcR(eloD,eloC,s){
+			return document.getElementById('r').textContent = (Math.pow((eloD-s),2)-Math.pow(eloC,2)).formatMoney('3',',','.');
+		}
+		function calcByPlus(p,q,r){
+			return document.getElementById('byp').textContent = ((-q+Math.sqrt(Math.pow(q,2)-(4*p*r)))/(2*p)).formatMoney('3',',','.');
+		}
+		function calcByMinus(p,q,r){
+			return document.getElementById('bym').textContent = ((-q-Math.sqrt(Math.pow(q,2)-(4*p*r)))/(2*p)).formatMoney('3',',','.');
+		}
+		function calcBx(ay,ax,eloD,by,s,id){
+			return document.getElementById(id).textContent = (s-((2*ay*by)/(2*(ax-eloD)))).formatMoney('3',',','.');
+		}
+		function calcT3(by,bx,ax,ay,id){
+			var x = bx-ax, y = by-ay;
+			return document.getElementById(id).textContent = (toDegrees(Math.atan((y)/(x)))+normalizeAngle(x,y)).formatMoney('3',',','.');
+		}
+		function calcT4(bx,by,eloD,id){
+			return document.getElementById(id).textContent = (toDegrees(Math.atan(by/(bx-eloD)))+normalizeAngle((bx-eloD),by)).formatMoney('3',',','.');
+		}
+		function calcW3(eloA,eloB,t2,t3,t4,w2,id){
+			return document.getElementById(id).textContent = (((eloA*w2)/eloB)*(Math.sin(toRadians(t4-t2))/Math.sin(toRadians(t3-t4)))).formatMoney('3',',','.');
+		}
+		function calcW4(eloA,eloC,t2,t3,t4,w2,id){
+			return document.getElementById(id).textContent = (((eloA*w2)/eloC)*((Math.sin(toRadians(t2-t3)))/(Math.sin(toRadians(t4-t3))))).formatMoney('3',',','.');	
+		}
+		function calcVa(eloA,w2){
+			return document.getElementById('va').textContent = ((eloA/1000)*w2).formatMoney('3',',','.');	
+		}
+		function calcVb(eloC,w4,id){
+			return document.getElementById(id).textContent = ((eloC/1000)*w4).formatMoney('3',',','.');	
+		}
+		function normalizeAngle(x,y){
+			//normalize angle to a correct quadrant
+			if(x > 0){
+				return 0;
+			}else if(x == 0){
+				if(y > 0)
+					return 90;
+				else if(y < 0)
+					return -90;
+				else if(y == 0)
+					alert('XY analysis not exists for current angle!');
+					return 0;					
+			}else if(x < 0){
+				if(y >= 0)
+					return 180;
+				else if(y < 0)
+					return -180;
+			}			
+		}
+		function grashofAnalisys(){
+			var beam = document.querySelectorAll('#eloA, #eloB, #eloC, #eloD');
+			beamValues = [];
+			for(var i = 0;i < beam.length; i++){
+				beamValues[i] = beam[i].value;
+			}			
+			beamValues.sort(function(a, b){return a-b});
+			if(beamValues[0].asDouble()+beamValues[3].asDouble() <= beamValues[1].asDouble()+beamValues[2].asDouble())
+				document.getElementById('ga').textContent = 'True';
+			else
+				document.getElementById('ga').textContent = 'False';
+		}
+		setTimeout(
+			function(){
+				document.getElementById('doAnalysis').addEventListener('click',doAnalysis);
+				document.getElementsByTagName('script')[0].remove();
+				document.getElementById('eloD').focus();
+		},1);	
+	</script>		
+</head>
+<body>
+	<div>
+		<div class="div-data" style="text-align:center;font-size:20px;font-weight:bold;border:0px solid gray;font-family:Arial">Engine Analysis</div>
+		<form>
+			<fieldset class="div-data">
+				<legend>Input Data</legend>
+				<div class="div-defs"><label class="dfsLabel">Beam 1</label><input required class="input-elo" type="text" id="eloD" value="0" min="1"></div>
+				<div class="div-defs"><label class="dfsLabel">Beam 2</label><input required class="input-elo" type="text" id="eloA" value="0" min="1"></div>
+				<div class="div-defs"><label class="dfsLabel">Beam 3</label><input required class="input-elo" type="text" id="eloB" value="0" min="1"></div>
+				<div class="div-defs"><label class="dfsLabel">Beam 4</label><input required class="input-elo" type="text" id="eloC" value="0" min="1"></div>
+				<div class="div-defs"><label class="dfsLabel">θ2</label><input required class="input-elo" type="number" id="t2" value="0" min="-360" max="360"><br/></div>
+				<div class="div-defs"><label class="dfsLabel">w2</label><input required class="input-elo" type="number" id="w2" value="0"><br/></div>
+				<div class="div-defs"><input type="button" id="doAnalysis" value="Do Analysis" style="width:100px;height:25px;margin: 5px 30px;"></div>
+			</fieldset>			
+		</form>
+		<fieldset class="div-data">
+			<legend>Data Analysis</legend>			
+		<table role="baseCalcs" align="center">
+			<tbody>
+				<tr>
+					<th>Ax</th>
+					<td id="ax"></td>
+					<th>Ay</th>
+					<td id="ay"></td>										
+				</tr>
+				<tr>
+					<th>P</th>
+					<td id="p"></td>
+					<th>R</th>
+					<td id="r"></td>										
+				</tr>				
+				<tr>
+					<th>Q</th>
+					<td id="q"></td>
+					<th>S</th>
+					<td id="s"></td>
+				</tr>
+				<tr>
+					<th>By +</th>
+					<td id="byp"></td>
+					<th>By -</th>
+					<td id="bym"></td>																				
+				</tr>
+				<tr>
+					<th>Bx +</th>
+					<td id="bxp"></td>
+					<th>Bx -</th>
+					<td id="bxm"></td>														
+				</tr>			
+				<tr>
+					<th>θ3 +</th>
+					<td><label id="t3p"></label><label>°</label></td>
+					<th>θ3 -</th>
+					<td><label id="t3m"></label><label>°</label></td>
+				</tr>
+				<tr>
+					<th>θ4 +</th>
+					<td><label  id="t4p"></label><label>°</label></td>
+					<th>θ4 -</th>
+					<td><label id="t4m"></label><label>°</label></td>
+				</tr>
+				<tr>
+					<th>w3 +</th>
+					<td><label id="w3p"></label><label>rad/s</label></td>
+					<th>w3 -</th>
+					<td><label id="w3m"></label><label>rad/s</label></td>
+				</tr>
+				<tr>
+					<th>w4 +</th>
+					<td><label id="w4p"></label><label>rad/s</label></td>
+					<th>w4 -</th>
+					<td><label id="w4m"></label><label>rad/s</label></td>
+				</tr>
+				<tr>
+					<th>Va +</th>
+					<td><label id="va"></label><label>m/s</label></td>					
+				</tr>
+				<tr>
+					<th>Vb +</th>
+					<td><label id="vbp"></label><label>m/s</label></td>
+					<th>Vb -</th>
+					<td><label id="vbm"></label><label>m/s</label></td>
+				</tr>
+			</tbody>
+		</table>	
+		<table>
+			<tr>
+				<th style="width:90px">Grashof Engine</th>
+				<td><label id="ga"></label></td>
+			</tr>
+		</table>
+		</fieldset>	
+	</div>
+</body>
+<footer style="text-align:right;font-size:11px;font-weight:normal;font-family:Arial">Created by: Ariel Rugiéri Dotto - 2014<br/>V20140720.0.1</footer>
+</html>
