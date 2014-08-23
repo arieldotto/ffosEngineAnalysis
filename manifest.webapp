@@ -1,14 +1,10 @@
 {
     "version": "1",
-    "name": "Analise de Mecanismo",
+    "name": "Analise de Mecanismo 4 barras",
     "launch_path": "/index.html",
-    "description": "Analise de mecanismos de barras",
+    "description": "Analise de mecanismos de 4 barras - grashof",
     "icons": {
-        "16": "images/logo16.png",
-        "32": "images/logo32.png",
-        "48": "images/logo48.png",
-        "64": "images/logo64.png",
-        "128": "images/logo128.png"
+        "128": "/images/logo128.png"
     },
     "developer": {
         "name": "Ariel Dotto",

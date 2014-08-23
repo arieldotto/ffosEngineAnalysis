@@ -2,59 +2,7 @@
 <head>
 	<title>Análise de Mecanismos de 4 Barras</title>
 	<meta charset="UTF-8">
-	<style type="text/css">
-		.div-right {
-			float:right;
-			margin: 5px;
-		}
-		.div-defs{
-			float:left;
-			margin-left: 5px;
-		}
-		.input-elo{
-			width: 50px;
-			border-radius: 2px;
-			-webkit-border-radius: 2px;
-			border: 1px solid #B4B4B4;
-			margin-left: 3px;
-			float:left;
-		}
-		.div-data{
-			background: #F0F0F0;
-			border: 1px solid #A5A5A5;
-			border-radius: 3px;
-			-moz-border-radius: 3px;
-			-webkit-border-radius: 3px;
-		}
-		input[readonly]{
-			background-color: rgb(232, 232, 232);
-		}
-		label{
-			width: 50px;
-			float: left;
-		}
-		th, .dfsLabel{
-			padding: .4em .4em .4em .4em;
-			border: 1px solid #999999;
-			border-radius: 2px;
-			-webkit-border-radius: 2px;
-			vertical-align: center;
-			text-align: left;
-			height: 12px;
-			font-size: 12px;
-			background-color: silver;
-			width: 40px;
-			float:left;
-		}
-		td:not([empty]){
-			border: 1px solid #999999;
-			font-size: 14px;
-			background-color: white;
-		}
-		td{
-			width: 100px;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/base.css">
 </head>
 <body>
 	<div>
@@ -66,18 +14,18 @@
 		</div>
 		<form id="form">
 			<fieldset class="div-data">
-				<legend>Input Data</legend>
+				<legend>Dados</legend>
 				<div class="div-defs"><label class="dfsLabel">Beam 1</label><input required class="input-elo" type="text" id="eloD" value="0" min="1"></div>
 				<div class="div-defs"><label class="dfsLabel">Beam 2</label><input required class="input-elo" type="text" id="eloA" value="0" min="1"></div>
 				<div class="div-defs"><label class="dfsLabel">Beam 3</label><input required class="input-elo" type="text" id="eloB" value="0" min="1"></div>
 				<div class="div-defs"><label class="dfsLabel">Beam 4</label><input required class="input-elo" type="text" id="eloC" value="0" min="1"></div>
 				<div class="div-defs"><label class="dfsLabel">θ2</label><input required class="input-elo" type="number" id="t2" value="0" min="-360" max="360"><br/></div>
 				<div class="div-defs"><label class="dfsLabel">w2</label><input required class="input-elo" type="number" id="w2" value="0"><br/></div>
-				<div class="div-defs"><input type="button" id="doAnalysis" value="Do Analysis" style="width:100px;height:25px;margin: 5px 30px;"></div>
+				<div class="div-defs"><input type="button" id="doAnalysis" value="Analisar" style="width:100px;height:25px;margin: 5px 30px;"></div>
 			</fieldset>
 		</form>
 		<fieldset id="fsDados" style="display:none;" class="div-data">
-			<legend>Data Analysis</legend>
+			<legend>Analise</legend>
 		<table role="baseCalcs" align="center">
 			<tbody>
 				<tr>
@@ -154,7 +102,6 @@
 		</table>
 		</fieldset>
 	</div>
-	<footer style="text-align:right;font-size:11px;font-weight:normal;font-family:Arial">Created by: Ariel Rugiéri Dotto - 2014<br/>V20140720.0.1</footer>
 	<script type="text/javascript" src="js/offline.js"></script>
 	<script type="text/javascript" src="js/webapp.js"></script>
 </body>
