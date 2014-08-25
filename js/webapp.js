@@ -33,6 +33,8 @@
          return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
      }
     function doAnalysis() {
+	  document.getElementById('log').innerText = '';
+	  document.getElementById('log').style.backgroundColor = 'white'
       var eloD = parseDouble(document.getElementById('eloD').value);
       var eloA = parseDouble(document.getElementById('eloA').value);
       var eloB = parseDouble(document.getElementById('eloB').value);
@@ -114,7 +116,7 @@
       return document.getElementById(id).textContent = ((eloC/1000)*w4).formatMoney('3',',','.');
     }
     function normalizeAngle(x,y){
-      //normalize angle to a correct quadrant
+      //normalize angle to a correct quadrant	  
       if(x > 0){
         return 0;
       }else if(x == 0){
@@ -123,7 +125,8 @@
         else if(y < 0)
           return -90;
         else if(y == 0)
-          alert('XY analysis not exists for current angle!');
+          document.getElementById('log').innerText = 'XY analysis not exists for current angle!';
+		  document.getElementById('log').style.backgroundColor = 'yellow'
           return 0;
       }else if(x < 0){
         if(y >= 0)
@@ -132,17 +135,16 @@
           return -180;
       }
     }
-    function grashofAnalisys(){
-      var beam = document.querySelectorAll('#eloA, #eloB, #eloC, #eloD');
-      beamValues = [];
-      for(var i = 0;i < beam.length; i++){
-        beamValues[i] = beam[i].value;
-      }
+    function grashofAnalisys(){      
+      var beamValues = [document.getElementById('eloA').value,document.getElementById('eloB').value,document.getElementById('eloC').value,document.getElementById('eloD').value];      
       beamValues.sort(function(a, b){return a-b});
-      if(beamValues[0].asDouble()+beamValues[3].asDouble() <= beamValues[1].asDouble()+beamValues[2].asDouble())
+      if(beamValues[0].asDouble()+beamValues[3].asDouble() <= beamValues[1].asDouble()+beamValues[2].asDouble()){
         document.getElementById('ga').textContent = 'True';
-      else
+		document.getElementById('ga').parentNode.style.backgroundColor = 'green';
+      }else{
         document.getElementById('ga').textContent = 'False';
+		document.getElementById('ga').parentNode.style.backgroundColor = 'red';
+	  }
     }
 
     function voltar() {
