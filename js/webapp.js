@@ -33,7 +33,7 @@
          return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
      }
     function doAnalysis() {
-	  document.getElementById('log').innerText = '';
+	  document.getElementById('log').textContent = '';
 	  document.getElementById('log').style.backgroundColor = 'white'
       var eloD = parseDouble(document.getElementById('eloD').value);
       var eloA = parseDouble(document.getElementById('eloA').value);
@@ -125,7 +125,7 @@
         else if(y < 0)
           return -90;
         else if(y == 0)
-          document.getElementById('log').innerText = 'XY analysis not exists for current angle!';
+          document.getElementById('log').textContent = 'XY analysis not exists for current angle!';
 		  document.getElementById('log').style.backgroundColor = 'yellow'
           return 0;
       }else if(x < 0){
